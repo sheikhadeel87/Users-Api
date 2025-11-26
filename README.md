@@ -53,7 +53,7 @@ A simple and clean RESTful **USERS API** built using **NODE.js,Express,MongoDB a
 ## Installation
 
 - Write this code in Terminal
-- `Git clone <your-repo-url>`
+- `Git clone <https://github.com/sheikhadeel87/Users-Api>`
 - `cd  USERS API`
 - `npm install`
 
