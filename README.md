@@ -4,6 +4,7 @@
 A simple and clean RESTful **USERS API** built using **NODE.js,Express,MongoDB and JWT Authentication** .
 
 ---
+###Part 1 - USER
 
 - This application includes:
 
@@ -19,25 +20,49 @@ A simple and clean RESTful **USERS API** built using **NODE.js,Express,MongoDB a
 
 - MongoDB connection using Mongoose
 
----
+###Part 2 - USER NOTES
+
+- Add new NOTES file which relates to USER(Add relationships (reference + nested))
+
+- Creates Notes(if user already exists or logged In with JWT Token confirmation) 
+
+- CRUD on Notes
+
 ---
 
-## Features
+## USER Features
 
 1. Users Registration(POST)
  - name,email,password
 2. Users Login(POST)
  - email,password
-3. Get Current User Profile(GET + Auth)
+3. Get Current User Profile By ID(GET + Auth)
  - current users Id + Auth Token
 4. Get All Users Profile(GET + Auth)
  - current users AuthToken
-5. Update User Profile(PUT/PATCH)
+5. Update User Profile By ID(PUT/PATCH)
  - user can only update his/her profile name,email
-6. Delete User profile(DELETE + Auth)
+6. Delete User profilBY ID(DELETE + Auth)
  - Auth Token required
 7. Protect Routes using JWT
 8. Validation for all requests
+
+## Note Features
+
+1. Create NOTES(POST)
+ - title,content,tag,user
+2. Get USER Notes by ID(GET + Auth)
+ - current users Id + Auth Token
+3. Get All User Notes (GET + Auth)
+ - current user AuthToken(for Logged-in User)
+4. User can update Notes(PUT/PATCH)
+ - user can only update his/her title/content/tag only.
+5. Deleted By ID(DELETE + Auth)
+ - Auth Token required(user can delete his/her note)
+6. Protect Routes using JWT
+7. Validation for all requests
+8. Each Note belongs to 1 User
+9. A user can have many notes(Using Mongoose ref: "User")
 
 ---
 ## Validations
@@ -45,8 +70,6 @@ A simple and clean RESTful **USERS API** built using **NODE.js,Express,MongoDB a
 - name min(3) characters
 - email must follow format like (abc12@example.com)
 - password min(6) values
-
----
 
 ---
 
@@ -59,12 +82,10 @@ A simple and clean RESTful **USERS API** built using **NODE.js,Express,MongoDB a
 
 ---
 
-## Environment VAriables 
+## Envirnment Variables 
 
 - Create .env file:
 - setUp the file
-
----
 
 ---
 
@@ -82,9 +103,7 @@ A simple and clean RESTful **USERS API** built using **NODE.js,Express,MongoDB a
 
 ---
 
----
-
-## 📂 API Documentation 
+## 📂 API Documentation For User
    
 > ### Register User
 >
@@ -94,25 +113,46 @@ A simple and clean RESTful **USERS API** built using **NODE.js,Express,MongoDB a
 >
  >>**POST** /api/auth/login
 
-> ### Get Current Users Profile
+> ### Get Current Users Profile By ID
 >
- >> **GET** /api/users/me
+ >> **GET** /api/users/:id
 
 > ### Get All Users Profile(Protected)
 >
  >> **GET** /api/users
 
-> ### Update Users Profile(Protected) 
+> ### Update Users Profile By ID(Protected) 
 > 
- >> **PUT/PATCH** /api/users/id: 
+ >> **PUT/PATCH** /api/users/:id
 
-> ### Delete User(Protected)
+> ### Delete User By ID(Protected)
 >
- >> **DELETE** /api/users/id:
+ >> **DELETE** /api/users/:id
 
+ ---
 
+ ## 📂 API Documentation For NOTES 
+   
+> ### CREATE New NOTES
+>
+ >>**POST** /api/notes
 
----
+> ### Get Notes By Id
+>
+ >> **GET** /api/notes/:id
+
+> ### Get All Notes(Protected)
+>
+ >> **GET** /api/notes
+
+> ### Update Notes By ID(Protected) 
+> 
+ >> **PUT/PATCH** /api/notes/:id
+
+> ### Delete Notes By ID(Protected)
+>
+ >> **DELETE** /api/notes/i:d
+
 
 ---
 
@@ -128,7 +168,7 @@ A simple and clean RESTful **USERS API** built using **NODE.js,Express,MongoDB a
 
 5. Test protected routes
 
----
+6. Test Sorting, filtering, pagination, search
 
 ---
 
@@ -138,13 +178,17 @@ A simple and clean RESTful **USERS API** built using **NODE.js,Express,MongoDB a
   
  - Express.js
 
- - MosgoDB & Mongoose
+ - MongoDB & Mongoose
 
  - JWT Authentication
 
  - Joi Validation
 
 ---
+
+
+
+
 
 
 

@@ -31,14 +31,15 @@ export const register = async (req, res) => {
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '24h' }
         );
 
         // Remove password from response
         const userResponse = {
             id: user._id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            profile: user.profile,
         };
 
         res.status(201).json({
@@ -76,14 +77,15 @@ export const login = async (req, res) => {
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '24h' }
         );
 
         // Remove password from response
         const userResponse = {
             id: user._id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            profile: user.profile,
         };
 
         res.json({

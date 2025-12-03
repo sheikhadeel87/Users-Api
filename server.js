@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/db.utils.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import noteRoutes from './routes/noteRoutes.js';
 
 // Load environment variables FIRST
 dotenv.config();
@@ -17,9 +18,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 // Routes
+console.log('*** registering /api/auth ***');
 app.use('/api/auth', authRoutes);
+
+console.log('*** registering /api/users ***');
 app.use('/api/users', userRoutes);
+
+console.log('*** registering /api/notes ***');
+app.use('/api/notes', noteRoutes);
 
 app.get('/', (req, res) => {
   res.send('Users API is running...');
