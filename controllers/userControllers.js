@@ -2,15 +2,35 @@ import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import { updateSchema } from '../validations/userValidation.js';
 
-// GET /api/users - Get all users (protected)
+// GET /api/users - Get all users (protected) with pagination, sorting, and basic filtering
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().select('-password').sort({ createdAt: -1 });
-        
+        const { page = 1, limit = 10, sort = '-createdAt', search } = req.query;
+
+        const query = {};
+
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+            ];
+        }
+
+        const users = await User.find(query)
+            .select('-password')
+            .sort(sort)
+            .skip((parseInt(page, 10) - 1) * parseInt(limit, 10))
+            .limit(parseInt(limit, 10));
+
+        const total = await User.countDocuments(query);
+
         res.json({
             message: 'Users retrieved successfully',
             count: users.length,
-            users
+            total,
+            page: parseInt(page, 10),
+            pages: Math.ceil(total / parseInt(limit, 10)),
+            users,
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -41,7 +61,7 @@ export const getUserById = async (req, res) => {
 // PUT /api/users/:id - Update user (protected - can only update own profile)
 export const updateUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, profile } = req.body;
         const userId = req.params.id;
 
         const { error } = updateSchema.validate(req.body, { abortEarly: false });
@@ -79,6 +99,14 @@ export const updateUser = async (req, res) => {
             user.password = await bcrypt.hash(password, 10);
         }
 
+        if (profile) {
+            // Merge incoming profile with existing profile (shallow merge)
+            user.profile = {
+                ...(user.profile || {}),
+                ...profile,
+            };
+        }
+
         // Save updated user
         const updatedUser = await user.save();
 
@@ -87,6 +115,7 @@ export const updateUser = async (req, res) => {
             id: updatedUser._id,
             name: updatedUser.name,
             email: updatedUser.email,
+            profile: updatedUser.profile,
             createdAt: updatedUser.createdAt,
             updatedAt: updatedUser.updatedAt
         };
