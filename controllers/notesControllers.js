@@ -5,9 +5,19 @@ import Note from '../models/Note.js';
 // Create Note
 export const createNote = async (req, res) => {
     try {
+        // Convert tags array to comma-separated string
+        let tagString = "";
+        if (Array.isArray(req.body.tag)) {
+            tagString = req.body.tag.filter(t => t && t.trim() !== '').join(',');
+        } else if (req.body.tag && typeof req.body.tag === 'string') {
+            tagString = req.body.tag.trim();
+        }
+        
         const note = await Note.create({
-            ...req.body,
-            user: req.user.id, // from authMiddleware
+            title: req.body.title,
+            content: req.body.content,
+            tag: tagString,
+            user: req.user.id,
         });
 
         res.status(201).json({
@@ -22,18 +32,21 @@ export const createNote = async (req, res) => {
 // Get All Notes for Logged-in User
 export const getNotes = async (req, res) => {
     try {
-        const { page = 1, limit = 3, sort = "-createdAt", search } = req.query;
-
+        const { page = 1, limit = 10, sort = "-createdAt", search } = req.query;
         let query = { user: req.user.id };
 
         if (search) {
             query.$text = { $search: search };
         }
 
+        const limitNum = parseInt(limit);
+        const pageNum = parseInt(page);
+        const skip = (pageNum - 1) * limitNum;
+
         const notes = await Note.find(query)
             .sort(sort)
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
+            .skip(skip)
+            .limit(limitNum);
 
         const total = await Note.countDocuments(query);
 
@@ -41,8 +54,8 @@ export const getNotes = async (req, res) => {
             success: true,
             count: notes.length,
             total,
-            page: parseInt(page),
-            pages: Math.ceil(total / limit),
+            page: pageNum,
+            pages: Math.ceil(total / limitNum),
             data: notes
         });
 
@@ -70,15 +83,30 @@ export const getNote =async (req,res) => {
 // Update Note by ID
 export const updateNote = async (req,res) =>{
     try {
+        // Convert tags array to comma-separated string
+        let tagString = "";
+        if (Array.isArray(req.body.tag)) {
+            tagString = req.body.tag.filter(t => t && t.trim() !== '').join(',');
+        } else if (req.body.tag && typeof req.body.tag === 'string') {
+            tagString = req.body.tag.trim();
+        }
+        
+        const updateData = {
+            title: req.body.title,
+            content: req.body.content,
+            tag: tagString
+        };
+
         const note = await Note.findOneAndUpdate({
             _id: req.params.id,
             user: req.user.id,
             },
-            req.body,
+            updateData,
             { new: true }
     );
 
         if(!note) return res.status(404).json({ message: "Note not found"});
+        
         res.json({ success:true, data: note});
 
     } catch (err) {
@@ -98,7 +126,7 @@ export const deleteNote = async (req, res) => {
         res.json({ success:true, message: "Note deleted" });
     
     } catch (err) {
-    res.status(400).json({ message: "err.message"})
+        res.status(400).json({ message: err.message})
     }
 };
 

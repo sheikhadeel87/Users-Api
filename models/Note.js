@@ -13,8 +13,8 @@ const noteSchema = new mongoose.Schema(
         required: [true, "Content is required"],
     },
     tag:{
-        type: [String],
-        default: [],
+        type: String,
+        default: "",
      },
     user: {
         type: mongoose.Schema.Types.ObjectId,
